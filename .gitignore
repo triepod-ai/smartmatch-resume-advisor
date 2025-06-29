@@ -72,3 +72,6 @@ coverage/
 # Misc
 *.pem
 .vercel
+smart-resume-analyzer.code-workspace
+PROJECT_STATUS.md
+.mcp.json
