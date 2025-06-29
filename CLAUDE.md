@@ -4,35 +4,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Backend Development
+### Quick Start (Recommended)
 ```bash
+# From project root - easy commands using root package.json
+npm run dev     # Start both backend and frontend
+npm run build   # Build frontend for production
+npm run lint    # Run ESLint on frontend
+npm run setup   # Run initial project setup
+```
+
+### Individual Service Commands
+```bash
+# Backend specific
+npm run dev:backend      # Start backend only (port 8000)
+npm run install:backend  # Install Python dependencies
+npm run test:backend     # Run backend tests
+
+# Frontend specific  
+npm run dev:frontend     # Start frontend only (port 3000)
+npm run install:frontend # Install Node.js dependencies
+npm run build:frontend   # Build frontend
+npm run lint:frontend    # Lint frontend
+```
+
+### Manual Development (Alternative)
+```bash
+# Backend
 cd backend
-python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
 uvicorn app.main:app --reload  # Start development server on port 8000
-```
 
-### Frontend Development
-```bash
+# Frontend
 cd frontend
-npm install
 npm run dev    # Start development server on port 3000
-npm run build  # Build for production
-npm run lint   # Run ESLint
-```
-
-### Testing
-```bash
-cd backend
-pytest  # Run backend tests
-black .  # Format code
-flake8 . # Lint Python code (if configured)
 ```
 
 ### Environment Setup
 ```bash
-# Copy environment template and configure
+# Automated setup (recommended)
+npm run setup
+
+# Manual setup
 cp backend/.env.example backend/.env
 # Edit .env to add OPENAI_API_KEY and other settings
 ```
