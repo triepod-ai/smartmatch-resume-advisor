@@ -27,6 +27,14 @@ npm run lint   # Run ESLint
 cd backend
 pytest  # Run backend tests
 black .  # Format code
+flake8 . # Lint Python code (if configured)
+```
+
+### Environment Setup
+```bash
+# Copy environment template and configure
+cp backend/.env.example backend/.env
+# Edit .env to add OPENAI_API_KEY and other settings
 ```
 
 ## Architecture Overview
@@ -76,3 +84,19 @@ Main endpoint: `POST /analyze` - accepts `resume_text` and `job_description`, re
 - Response models use Pydantic for type safety and automatic API documentation
 - Vector embeddings enable semantic similarity beyond simple keyword matching
 - FastAPI automatically generates interactive docs at `/docs` endpoint
+
+### File Upload Support
+- Frontend supports drag-and-drop .txt file upload for resume input
+- File validation enforces text format and minimum character requirements
+- Sample data available via button for quick testing without file upload
+
+### Component Architecture
+- Custom React hooks (`useAnalyzeResume`) manage API state and error handling
+- Modular components in `src/components/forms/` and `src/components/results/`
+- Copy-to-clipboard functionality for improved bullet points
+- Color-coded match percentage (red <60%, yellow 60-80%, green >80%)
+
+### Development Workflow
+- Backend runs on port 8000, frontend on port 3000
+- Full TypeScript coverage with interfaces matching backend Pydantic models
+- Environment-based API URL configuration for different deployment targets
