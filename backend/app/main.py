@@ -9,10 +9,13 @@ import time
 from app.config import settings
 from app.models import AnalysisRequest, AnalysisResponse, ErrorResponse
 from app.chains.analyzer import ResumeAnalyzer
+from app.logging_config import setup_logging, log_request, log_analysis_request, get_log_status
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+loggers = setup_logging()
+logger = loggers['app']
+access_logger = loggers['access']
+error_logger = loggers['error']
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -20,6 +23,32 @@ app = FastAPI(
     description="AI-powered resume analysis and optimization",
     version="1.0.0"
 )
+
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log all HTTP requests with timing."""
+    start_time = time.time()
+    
+    # Get client IP
+    client_ip = request.client.host if request.client else "unknown"
+    
+    # Process request
+    response = await call_next(request)
+    
+    # Calculate processing time
+    processing_time = time.time() - start_time
+    
+    # Log request
+    log_request(
+        method=request.method,
+        path=request.url.path,
+        status_code=response.status_code,
+        processing_time=processing_time,
+        client_ip=client_ip
+    )
+    
+    return response
 
 # Configure CORS
 app.add_middleware(
@@ -47,12 +76,21 @@ async def health_check():
     return {"status": "healthy", "model": settings.model_name}
 
 
+@app.get("/logs/status")
+async def log_status():
+    """Get logging status and file information."""
+    return get_log_status()
+
+
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_resume(request: AnalysisRequest):
     """Analyze resume against job description."""
+    start_time = time.time()
+    resume_len = len(request.resume_text)
+    job_desc_len = len(request.job_description)
+    
     try:
-        start_time = time.time()
-        logger.info("Starting resume analysis...")
+        logger.info(f"Starting resume analysis - Resume: {resume_len} chars, Job: {job_desc_len} chars")
         
         # Perform analysis
         result = await analyzer.analyze(
@@ -61,17 +99,35 @@ async def analyze_resume(request: AnalysisRequest):
         )
         
         processing_time = time.time() - start_time
-        logger.info(f"Analysis completed in {processing_time:.2f} seconds")
+        
+        # Log successful analysis
+        log_analysis_request(
+            resume_len=resume_len,
+            job_desc_len=job_desc_len,
+            processing_time=processing_time,
+            success=True
+        )
         
         return result
         
     except Exception as e:
-        logger.error(f"Analysis failed: {str(e)}", exc_info=True)
+        processing_time = time.time() - start_time
+        
+        # Log failed analysis
+        log_analysis_request(
+            resume_len=resume_len,
+            job_desc_len=job_desc_len,
+            processing_time=processing_time,
+            success=False,
+            error=str(e)
+        )
+        
+        error_logger.error(f"Analysis failed: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     """Global exception handler."""
-    logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
+    error_logger.error(f"Unhandled exception on {request.method} {request.url.path}: {str(exc)}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content=ErrorResponse(
