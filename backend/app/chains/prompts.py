@@ -36,7 +36,21 @@ Provide a detailed analysis including:
 4. Key strengths of the candidate
 5. Areas that need improvement
 
-Format your response as JSON with keys: match_percentage, matched_keywords, missing_keywords, strengths, improvements
+Format your response as JSON with keys: 
+- match_percentage: integer (0-100)
+- matched_keywords: array of strings
+- missing_keywords: array of strings  
+- strengths: array of strings (each strength as separate item)
+- improvements: array of strings (each improvement as separate item)
+
+Example format:
+{
+  "match_percentage": 75,
+  "matched_keywords": ["Python", "AWS", "Docker"],
+  "missing_keywords": ["Kubernetes", "React"],
+  "strengths": ["Strong Python experience", "Cloud infrastructure knowledge"],
+  "improvements": ["Add Kubernetes experience", "Include frontend skills"]
+}
 """
 )
 
