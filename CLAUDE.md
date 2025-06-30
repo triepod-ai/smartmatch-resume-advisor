@@ -11,6 +11,11 @@ npm run dev     # Start both backend and frontend
 npm run build   # Build frontend for production
 npm run lint    # Run ESLint on frontend
 npm run setup   # Run initial project setup
+
+# Log Management
+npm run logs        # Check logging status
+npm run logs:tail   # Monitor application logs in real-time
+npm run logs:clear  # Clear application log files
 ```
 
 ### Individual Service Commands
@@ -112,3 +117,43 @@ Main endpoint: `POST /analyze` - accepts `resume_text` and `job_description`, re
 - Backend runs on port 8000, frontend on port 3000
 - Full TypeScript coverage with interfaces matching backend Pydantic models
 - Environment-based API URL configuration for different deployment targets
+
+## Logging & Monitoring
+
+### Application Logging Structure
+```
+backend/app-logs/
+├── app.log       # General application logs (INFO level)
+├── access.log    # HTTP request/response logs
+└── error.log     # Error and exception logs
+```
+
+### Log Management Commands
+```bash
+# Check log status and file sizes
+npm run logs:status
+
+# Monitor logs in real-time
+npm run logs:tail    # Application logs
+tail -f backend/app-logs/access.log  # HTTP requests
+tail -f backend/app-logs/error.log   # Errors only
+
+# Clear logs
+npm run logs:clear   # Clear all application logs
+
+# API endpoints for monitoring
+curl http://localhost:8000/logs/status  # Log status endpoint
+curl http://localhost:8000/health       # Health check
+```
+
+### Log Features
+- **Automatic rotation**: 10MB files, 5 backups per log type
+- **Structured logging**: Timestamp, logger name, level, message
+- **Request tracking**: HTTP method, path, status, timing, client IP
+- **Analysis logging**: Resume/job description length, processing time, success/failure
+- **Error context**: Full stack traces for debugging
+- **Separation**: Application logs separate from MCP infrastructure logs
+
+### Monitoring Endpoints
+- `GET /health` - Basic health check with model info
+- `GET /logs/status` - Log file status and sizes
