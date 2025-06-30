@@ -4,7 +4,7 @@
   "description": "AI-powered resume analysis application with FastAPI backend and Next.js frontend",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "cd backend && source venv/bin/activate && uvicorn app.main:app --reload",
+    "dev:backend": "cd backend && bash -c 'source .venv/bin/activate && uvicorn app.main:app --reload'",
     "dev:frontend": "cd frontend && npm run dev",
     "build": "npm run build:frontend",
     "build:frontend": "cd frontend && npm run build",
@@ -17,7 +17,11 @@
     "install:backend": "cd backend && pip install -r requirements.txt",
     "install:frontend": "cd frontend && npm install",
     "test": "npm run test:backend",
-    "test:backend": "cd backend && pytest"
+    "test:backend": "cd backend && pytest",
+    "logs": "npm run logs:status",
+    "logs:status": "cd backend && python3 -c \"from app.logging_config import get_log_status; import json; print(json.dumps(get_log_status(), indent=2))\"",
+    "logs:tail": "tail -f backend/app-logs/app.log",
+    "logs:clear": "rm -f backend/app-logs/*.log && echo 'Application logs cleared'"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
