@@ -8,9 +8,10 @@ import logging
 from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain.schema import Document
+# Removed OpenAI embeddings and FAISS dependencies for simplified version
+# from langchain_openai import OpenAIEmbeddings
+# from langchain_community.vectorstores import FAISS
+# from langchain.schema import Document
 
 from app.config import settings
 from app.models import AnalysisResponse, BulletSuggestion
@@ -24,7 +25,13 @@ logger = logging.getLogger(__name__)
 
 
 class ResumeAnalyzer:
-    """Main class for analyzing resumes against job descriptions."""
+    """
+    Main class for analyzing resumes against job descriptions.
+    
+    Simplified version that uses LLM-based keyword extraction and matching
+    without FAISS vector similarity. Includes fallback to simple keyword
+    matching when LLM analysis fails.
+    """
     
     def __init__(self):
         """Initialize the analyzer with LangChain components."""
@@ -35,10 +42,11 @@ class ResumeAnalyzer:
             openai_api_key=settings.openai_api_key
         )
         
-        self.embeddings = OpenAIEmbeddings(
-            model=settings.embedding_model,
-            openai_api_key=settings.openai_api_key
-        )
+        # Removed embeddings initialization for simplified version
+        # self.embeddings = OpenAIEmbeddings(
+        #     model=settings.embedding_model,
+        #     openai_api_key=settings.openai_api_key
+        # )
         
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=settings.chunk_size,
@@ -125,7 +133,7 @@ class ResumeAnalyzer:
         resume_text: str,
         job_description: str
     ) -> Dict[str, Any]:
-        """Analyze resume-job match."""
+        """Analyze resume-job match using LLM with fallback to simple matching."""
         try:
             result = await self.match_chain.arun(
                 resume_keywords=", ".join(resume_keywords),
@@ -135,16 +143,121 @@ class ResumeAnalyzer:
             )
             
             # Parse JSON response
-            return json.loads(result)
+            parsed_result = json.loads(result)
+            
+            # Debug logging to see what LLM returned
+            logger.info(f"LLM match analysis result: {json.dumps(parsed_result, indent=2)}")
+            
+            # Normalize the result to ensure lists for strengths and improvements
+            normalized_result = self._normalize_match_result(parsed_result)
+            
+            return normalized_result
         except json.JSONDecodeError:
-            # Fallback parsing if JSON fails
-            return {
-                "match_percentage": 50,
-                "matched_keywords": list(set(resume_keywords) & set(job_keywords)),
-                "missing_keywords": list(set(job_keywords) - set(resume_keywords)),
-                "strengths": ["Unable to parse detailed analysis"],
-                "improvements": ["Please try again"]
-            }
+            logger.warning("LLM response parsing failed, using fallback matching")
+            return self._simple_keyword_match(resume_keywords, job_keywords, resume_text, job_description)
+        except Exception as e:
+            logger.error(f"LLM match analysis failed: {str(e)}, using fallback matching")
+            return self._simple_keyword_match(resume_keywords, job_keywords, resume_text, job_description)
+    
+    def _normalize_match_result(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """Normalize LLM match result to ensure proper data types."""
+        normalized = result.copy()
+        
+        # Convert string values to lists for strengths and improvements
+        for field in ['strengths', 'improvements']:
+            if field in normalized:
+                value = normalized[field]
+                if isinstance(value, str):
+                    # Split string by common delimiters and clean up
+                    items = []
+                    for delimiter in ['\n', ';', '.', '|']:
+                        if delimiter in value:
+                            items = [item.strip() for item in value.split(delimiter) if item.strip()]
+                            break
+                    
+                    # If no delimiters found, treat as single item
+                    if not items:
+                        items = [value.strip()] if value.strip() else []
+                    
+                    normalized[field] = items
+                    logger.info(f"Converted {field} from string to list: {items}")
+                elif not isinstance(value, list):
+                    # Handle other non-list types
+                    normalized[field] = [str(value)] if value else []
+                    logger.info(f"Converted {field} from {type(value)} to list")
+        
+        # Ensure other required fields are lists
+        for field in ['matched_keywords', 'missing_keywords']:
+            if field in normalized and not isinstance(normalized[field], list):
+                if isinstance(normalized[field], str):
+                    normalized[field] = [item.strip() for item in normalized[field].split(',') if item.strip()]
+                else:
+                    normalized[field] = []
+        
+        # Ensure match_percentage is a number
+        if 'match_percentage' in normalized:
+            try:
+                normalized['match_percentage'] = float(normalized['match_percentage'])
+            except (ValueError, TypeError):
+                logger.warning(f"Invalid match_percentage: {normalized['match_percentage']}, defaulting to 0")
+                normalized['match_percentage'] = 0
+        
+        return normalized
+    
+    def _simple_keyword_match(
+        self,
+        resume_keywords: List[str],
+        job_keywords: List[str],
+        resume_text: str,
+        job_description: str
+    ) -> Dict[str, Any]:
+        """Simple keyword matching as fallback when LLM fails."""
+        # Convert to lowercase for case-insensitive matching
+        resume_keywords_lower = [k.lower() for k in resume_keywords]
+        job_keywords_lower = [k.lower() for k in job_keywords]
+        resume_text_lower = resume_text.lower()
+        
+        # Find exact matches
+        exact_matches = list(set(resume_keywords_lower) & set(job_keywords_lower))
+        
+        # Find partial matches (job keywords that appear in resume text)
+        partial_matches = []
+        for jk in job_keywords_lower:
+            if jk not in exact_matches and jk in resume_text_lower:
+                partial_matches.append(jk)
+        
+        # Combine matches
+        all_matches = exact_matches + partial_matches
+        missing_keywords = [jk for jk in job_keywords_lower if jk not in all_matches]
+        
+        # Calculate match percentage
+        if job_keywords_lower:
+            match_percentage = int((len(all_matches) / len(job_keywords_lower)) * 100)
+        else:
+            match_percentage = 0
+        
+        # Generate basic feedback
+        strengths = []
+        if exact_matches:
+            strengths.append(f"Strong keyword matches: {', '.join(exact_matches[:5])}")
+        if partial_matches:
+            strengths.append(f"Relevant skills found: {', '.join(partial_matches[:3])}")
+        if not strengths:
+            strengths.append("Resume contains relevant experience")
+        
+        improvements = []
+        if missing_keywords:
+            improvements.append(f"Consider adding: {', '.join(missing_keywords[:5])}")
+        if match_percentage < 60:
+            improvements.append("Focus on including more job-specific keywords")
+        
+        return {
+            "match_percentage": match_percentage,
+            "matched_keywords": [k for k in resume_keywords if k.lower() in all_matches],
+            "missing_keywords": [k for k in job_keywords if k.lower() in missing_keywords],
+            "strengths": strengths,
+            "improvements": improvements
+        }
 
     async def _improve_bullets(
         self,
