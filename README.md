@@ -134,6 +134,7 @@ nano backend/.env
 ### 3. **Launch the Platform**
 ```bash
 # From project root
+npm run build
 npm run dev
 ```
 
