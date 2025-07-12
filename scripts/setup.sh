@@ -34,12 +34,20 @@ setup_backend() {
     echo "2. Setting up backend..."
     cd backend
     
-    if [ ! -d "venv" ]; then
-        python3 -m venv venv
+    if [ ! -d ".venv" ]; then
+        if command -v uv &> /dev/null; then
+            uv venv
+        else
+            python3 -m venv .venv
+        fi
     fi
     
-    source venv/bin/activate
-    pip install -r requirements.txt
+    source .venv/bin/activate
+    if command -v uv &> /dev/null; then
+        uv pip install -r requirements.txt
+    else
+        pip install -r requirements.txt
+    fi
     
     if [ ! -f ".env" ]; then
         cp .env.example .env
