@@ -127,6 +127,7 @@ npm run setup
 ```bash
 # Copy and edit the environment file
 cp backend/.env.example backend/.env
+nano backend/.env
 # Edit .env and add your OpenAI API key
 ```
 
