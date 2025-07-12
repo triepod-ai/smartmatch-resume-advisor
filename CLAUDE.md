@@ -6,30 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Quick Start (Recommended)
 ```bash
-# From project root - easy commands using root package.json
+# From project root - streamlined commands using root package.json
 npm run dev     # Start both backend and frontend
 npm run build   # Build frontend for production
+npm run start   # Start production frontend
 npm run lint    # Run ESLint on frontend
+npm run test    # Run backend tests
 npm run setup   # Run initial project setup
 
 # Log Management
-npm run logs        # Check logging status
-npm run logs:tail   # Monitor application logs in real-time
+npm run logs        # Monitor application logs in real-time
 npm run logs:clear  # Clear application log files
-```
-
-### Individual Service Commands
-```bash
-# Backend specific
-npm run dev:backend      # Start backend only (port 8000)
-npm run install:backend  # Install Python dependencies
-npm run test:backend     # Run backend tests
-
-# Frontend specific  
-npm run dev:frontend     # Start frontend only (port 3000)
-npm run install:frontend # Install Node.js dependencies
-npm run build:frontend   # Build frontend
-npm run lint:frontend    # Lint frontend
 ```
 
 ### Manual Development (Alternative)
@@ -139,11 +126,8 @@ backend/app-logs/
 
 ### Log Management Commands
 ```bash
-# Check log status and file sizes
-npm run logs:status
-
 # Monitor logs in real-time
-npm run logs:tail    # Application logs
+npm run logs         # Application logs
 tail -f backend/app-logs/access.log  # HTTP requests
 tail -f backend/app-logs/error.log   # Errors only
 

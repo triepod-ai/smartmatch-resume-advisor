@@ -22,9 +22,16 @@ check_prereqs() {
     echo "✅ Prerequisites check passed"
 }
 
+# Root dependencies setup
+setup_root() {
+    echo "1. Installing root dependencies..."
+    npm install
+    echo "✅ Root dependencies installed (concurrently)"
+}
+
 # Backend setup
 setup_backend() {
-    echo "1. Setting up backend..."
+    echo "2. Setting up backend..."
     cd backend
     
     if [ ! -d "venv" ]; then
@@ -44,7 +51,7 @@ setup_backend() {
 
 # Frontend setup
 setup_frontend() {
-    echo "2. Setting up frontend..."
+    echo "3. Setting up frontend..."
     cd frontend
     npm install
     cd ..
@@ -53,6 +60,7 @@ setup_frontend() {
 # Main execution
 main() {
     check_prereqs
+    setup_root
     setup_backend
     setup_frontend
     
@@ -61,7 +69,7 @@ main() {
     echo ""
     echo "Next steps:"
     echo "1. Add your OpenAI API key to backend/.env"
-    echo "2. Run: ./scripts/dev-start.sh"
+    echo "2. Run: npm run dev"
     echo "3. Open http://localhost:3000"
 }
 

@@ -12,6 +12,7 @@ export interface AnalysisResponse {
   strengths: string[];
   areas_for_improvement: string[];
   overall_feedback: string;
+  processing_time?: number;
 }
 
 export interface AnalysisRequest {
