@@ -35,6 +35,7 @@ class AnalysisResponse(BaseModel):
     overall_feedback: str = Field(..., description="Summary feedback")
     strengths: List[str] = Field(default_factory=list)
     areas_for_improvement: List[str] = Field(default_factory=list)
+    processing_time: Optional[float] = Field(None, description="Analysis processing time in seconds")
 
 
 class ErrorResponse(BaseModel):

@@ -19,9 +19,8 @@ pydantic-settings>=2.0.0  # Required for Settings class
 # Environment and utilities
 python-dotenv>=1.0.0
 
-# Optional dependencies (currently not used but available)
-# Vector stores and embeddings (disabled for WSL compatibility)
-# faiss-cpu==1.7.4  # Requires swig system dependency
+# Vector stores and embeddings (enabled for semantic analysis)
+faiss-cpu>=1.7.4
 tiktoken>=0.5.2
 
 # Text processing (future use)
@@ -33,7 +32,7 @@ pytest>=7.4.4
 black>=23.12.1
 
 # Notes:
-# - FAISS disabled due to WSL/swig dependency issues
-# - Using simplified keyword matching instead of vector embeddings
+# - FAISS enabled for semantic similarity analysis
+# - Hybrid approach: keyword matching + vector embeddings
 # - pydantic-settings added as required dependency
 # - All versions tested working with Python 3.12 + uv
