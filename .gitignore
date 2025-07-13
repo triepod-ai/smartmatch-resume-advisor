@@ -68,6 +68,7 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+rt-assessment/
 
 # Misc
 *.pem
@@ -77,5 +78,4 @@ PROJECT_STATUS.md
 .mcp.json
 CLAUDE.md
 READYTENSOR_SUBMISSION_CHECKLIST.md
-READYTENSOR_ARTICLE.md
 QUICK_FIXES_COMPLETED.md
