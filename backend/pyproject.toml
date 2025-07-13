@@ -1,3 +1,9 @@
+[project]
+name = "smart-resume-analyzer"
+requires-python = ">=3.11"
+description = "AI-powered resume analysis application with FastAPI backend"
+version = "1.0.0"
+
 [tool.black]
 line-length = 88
 target-version = ['py311']

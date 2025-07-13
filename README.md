@@ -114,6 +114,31 @@ Resume Input → Text Chunking → Parallel Processing → Vector Similarity →
 - Reduce manual resume review time
 - Improve hiring quality metrics
 
+## 📋 **Prerequisites**
+
+Before installing SmartMatch Resume Analyzer, ensure your system meets these requirements:
+
+### **System Requirements**
+- **Operating System**: Windows 10+, macOS 10.15+, or Linux (Ubuntu 18.04+)
+- **Python**: 3.11 or higher (required for backend)
+- **Node.js**: 16.x or higher (required for frontend)
+- **npm**: 8.x or higher (comes with Node.js)
+- **Memory**: 4GB RAM minimum, 8GB recommended
+- **Storage**: 2GB free space for dependencies and application files
+
+### **API Requirements**
+- **OpenAI API Key**: Required for AI analysis (get from [OpenAI Platform](https://platform.openai.com/api-keys))
+- **API Credits**: Approximately $0.01-0.05 per resume analysis
+
+### **Knowledge Prerequisites**
+- Basic command line usage (running commands in terminal/command prompt)
+- Understanding of environment variables (helpful but not required)
+- Familiarity with Python virtual environments (helpful but automated by setup)
+
+### **Network Requirements**
+- Internet connection for API calls and dependency installation
+- Access to OpenAI API endpoints (not blocked by corporate firewalls)
+
 ## ⚡ **Quick Start - Get Running in 3 Minutes**
 
 ### 1. **Clone and Setup**
@@ -175,7 +200,10 @@ Using our included sample data, see how SmartMatch transforms a software enginee
 
 ## 📚 **Documentation & Educational Resources**
 
-- [🎯 **Interactive Tutorial**](SmartMatch_AI_Analysis_Tutorial.ipynb) - Jupyter notebook with complete NLP pipeline walkthrough
+- [🎯 **Interactive Tutorial Series**](01_Setup_and_Data.ipynb) - 3-part Jupyter notebook series with complete NLP pipeline walkthrough
+  - [Part 1: Setup and Data](01_Setup_and_Data.ipynb) - Environment setup and data models
+  - [Part 2: Analysis Pipeline](02_Analysis_Pipeline.ipynb) - Core AI engine and LangChain integration
+  - [Part 3: Results and Interpretation](03_Results_and_Interpretation.ipynb) - Live analysis and insights
 - [🏗️ **Architecture Guide**](docs/ARCHITECTURE.md) - Technical implementation details and design patterns
 - [📊 **Sample Analysis**](examples/SAMPLE_ANALYSIS_OUTPUT.md) - Real-world analysis output with detailed explanations
 - [⚙️ **Development Setup**](CLAUDE.md) - Complete setup instructions and development workflow
@@ -338,6 +366,105 @@ curl http://localhost:8000/logs/status
 - **Success Rate**: 99.9% with automatic fallback systems
 - **Error Recovery**: Graceful degradation when LLM services are unavailable
 - **Concurrent Processing**: Supports multiple simultaneous analyses
+
+## ⚙️ **Configuration Guide**
+
+SmartMatch Resume Analyzer uses environment variables for configuration. All settings are defined in `backend/.env` file.
+
+### **Required Configuration**
+
+#### **OpenAI API Settings** (Required)
+```bash
+# OpenAI API Configuration
+OPENAI_API_KEY=your_openai_api_key_here  # Get from https://platform.openai.com/api-keys
+MODEL_NAME=gpt-3.5-turbo                # OpenAI model (recommended for speed/cost)
+MAX_TOKENS=2000                          # Maximum tokens per API call
+TEMPERATURE=0.1                          # Model temperature (0.0-1.0, lower = more consistent)
+```
+
+### **Optional Configuration**
+
+#### **API Server Settings**
+```bash
+# Server Configuration
+API_HOST=0.0.0.0                        # Host to bind server (0.0.0.0 for all interfaces)
+API_PORT=8000                           # Port for backend server
+FRONTEND_URL=http://localhost:3000       # Frontend URL for CORS
+ENVIRONMENT=development                  # Environment mode (development/production)
+```
+
+#### **Logging Configuration**
+```bash
+# Logging Settings
+DEBUG=false                             # Enable debug logging (true/false)
+LOG_LEVEL=INFO                          # Log level (DEBUG, INFO, WARNING, ERROR)
+LOG_MAX_SIZE=10                         # Log file max size in MB
+LOG_BACKUP_COUNT=5                      # Number of log backups to keep
+```
+
+#### **Performance Tuning**
+```bash
+# Performance Settings
+REQUEST_TIMEOUT=30                      # Request timeout in seconds
+MAX_CONCURRENT_REQUESTS=10              # Max concurrent requests
+```
+
+#### **Advanced AI Configuration**
+```bash
+# Embedding Model (for semantic analysis)
+EMBEDDING_MODEL=text-embedding-ada-002  # OpenAI embedding model
+
+# LangSmith Tracing (optional debugging)
+LANGCHAIN_TRACING_V2=false              # Enable LangSmith tracing
+LANGCHAIN_API_KEY=your_langsmith_key    # LangSmith API key
+LANGCHAIN_PROJECT=resume-analyzer       # Project name in LangSmith
+```
+
+### **Configuration Examples**
+
+#### **Development Setup**
+```bash
+# Minimal development configuration
+OPENAI_API_KEY=sk-your-key-here
+DEBUG=true
+LOG_LEVEL=DEBUG
+```
+
+#### **Production Setup**
+```bash
+# Production configuration
+OPENAI_API_KEY=sk-your-key-here
+ENVIRONMENT=production
+DEBUG=false
+LOG_LEVEL=INFO
+API_HOST=0.0.0.0
+API_PORT=8000
+REQUEST_TIMEOUT=60
+MAX_CONCURRENT_REQUESTS=20
+```
+
+#### **Testing Setup**
+```bash
+# Testing/CI configuration
+OPENAI_API_KEY=sk-test-key-here
+MODEL_NAME=gpt-3.5-turbo
+TEMPERATURE=0.0                         # Deterministic for testing
+DEBUG=false
+LOG_LEVEL=WARNING
+```
+
+### **Environment File Setup**
+1. **Copy the example file**: `cp backend/.env.example backend/.env`
+2. **Edit configuration**: Add your OpenAI API key and adjust settings
+3. **Validate setup**: Run `npm run validate` to verify configuration
+4. **Test functionality**: Run `npm run test` to ensure everything works
+
+### **Configuration Validation**
+The application includes automatic configuration validation:
+- **Required fields**: Checks for missing required environment variables
+- **API key format**: Validates OpenAI API key format
+- **Numeric ranges**: Ensures numeric values are within valid ranges
+- **File permissions**: Verifies log directory permissions
 
 ## 🤝 **Contributing**
 

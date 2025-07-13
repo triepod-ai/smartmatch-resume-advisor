@@ -1,13 +1,15 @@
 import pytest
 import json
+from typing import Dict, Any, List
 from unittest.mock import patch, MagicMock
+from fastapi.testclient import TestClient
 
 
 class TestAnalysisEndpoint:
     """Test the core /analyze endpoint functionality."""
     
     @pytest.mark.analysis
-    def test_analyze_endpoint_success(self, client, sample_resume, sample_job_description, expected_analysis_fields):
+    def test_analyze_endpoint_success(self, client: TestClient, sample_resume: str, sample_job_description: str, expected_analysis_fields: List[str]) -> None:
         """Test successful analysis with valid input."""
         response = client.post('/analyze', json={
             'resume_text': sample_resume,
@@ -31,7 +33,7 @@ class TestAnalysisEndpoint:
         assert isinstance(data['improved_bullets'], list)
 
     @pytest.mark.analysis
-    def test_analyze_endpoint_missing_resume(self, client, sample_job_description):
+    def test_analyze_endpoint_missing_resume(self, client: TestClient, sample_job_description: str) -> None:
         """Test analysis with missing resume text."""
         response = client.post('/analyze', json={
             'job_description': sample_job_description
@@ -40,7 +42,7 @@ class TestAnalysisEndpoint:
         assert response.status_code == 422  # FastAPI validation error
         
     @pytest.mark.analysis
-    def test_analyze_endpoint_missing_job_description(self, client, sample_resume):
+    def test_analyze_endpoint_missing_job_description(self, client: TestClient, sample_resume: str) -> None:
         """Test analysis with missing job description."""
         response = client.post('/analyze', json={
             'resume_text': sample_resume
@@ -49,7 +51,7 @@ class TestAnalysisEndpoint:
         assert response.status_code == 422  # FastAPI validation error
 
     @pytest.mark.analysis
-    def test_analyze_endpoint_empty_strings(self, client):
+    def test_analyze_endpoint_empty_strings(self, client: TestClient) -> None:
         """Test analysis with empty strings."""
         response = client.post('/analyze', json={
             'resume_text': '',
@@ -65,7 +67,7 @@ class TestAnalysisEndpoint:
             assert 'match_percentage' in data
 
     @pytest.mark.analysis
-    def test_analyze_endpoint_short_text(self, client):
+    def test_analyze_endpoint_short_text(self, client: TestClient) -> None:
         """Test analysis with very short text."""
         response = client.post('/analyze', json={
             'resume_text': 'John Doe, Engineer',
@@ -78,7 +80,7 @@ class TestAnalysisEndpoint:
         assert 'match_percentage' in data
 
     @pytest.mark.analysis  
-    def test_analyze_endpoint_realistic_match(self, client, sample_resume, sample_job_description):
+    def test_analyze_endpoint_realistic_match(self, client: TestClient, sample_resume: str, sample_job_description: str) -> None:
         """Test that analysis produces realistic match percentages."""
         response = client.post('/analyze', json={
             'resume_text': sample_resume,
@@ -99,7 +101,7 @@ class TestAnalysisEndpoint:
 
     @pytest.mark.analysis
     @patch('app.chains.analyzer.ResumeAnalyzer._analyze_with_llm')
-    def test_analyze_endpoint_fallback_handling(self, mock_llm, client, sample_resume, sample_job_description):
+    def test_analyze_endpoint_fallback_handling(self, mock_llm: MagicMock, client: TestClient, sample_resume: str, sample_job_description: str) -> None:
         """Test that fallback system works when LLM fails."""
         # Mock LLM to raise an exception
         mock_llm.side_effect = Exception("LLM service unavailable")
@@ -118,7 +120,7 @@ class TestAnalysisEndpoint:
         assert isinstance(data['match_percentage'], (int, float))
 
     @pytest.mark.analysis
-    def test_health_endpoint(self, client):
+    def test_health_endpoint(self, client: TestClient) -> None:
         """Test that health endpoint is working."""
         response = client.get('/health')
         assert response.status_code == 200
