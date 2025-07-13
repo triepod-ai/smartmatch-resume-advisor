@@ -81,5 +81,5 @@ def expected_analysis_fields():
         "missing_keywords",
         "suggestions",
         "strengths",
-        "improved_bullets"
+        "areas_for_improvement"
     ]

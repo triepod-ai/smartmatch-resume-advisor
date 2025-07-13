@@ -126,6 +126,29 @@ Before installing SmartMatch Resume Analyzer, ensure your system meets these req
 - **Memory**: 4GB RAM minimum, 8GB recommended
 - **Storage**: 2GB free space for dependencies and application files
 
+### **GPU Requirements**
+
+**SmartMatch Resume Analyzer is CPU-optimized and does NOT require GPU acceleration.**
+
+- **GPU Support**: Not required - application runs efficiently on CPU-only systems
+- **CUDA/cuDNN**: Not needed - all computations are performed via OpenAI API calls
+- **Local ML Models**: None - all machine learning inference is handled by OpenAI's cloud infrastructure
+- **Graphics Card**: Any standard graphics card sufficient for OS display is adequate
+- **Compute Requirements**: CPU-only processing with network I/O for API calls
+
+**Performance Notes:**
+- Analysis speed is primarily limited by network latency to OpenAI API (~1-3 seconds)
+- Local processing (keyword extraction, text parsing) is lightweight and CPU-efficient
+- No local model loading or GPU memory allocation required
+- Suitable for deployment on standard cloud instances without GPU acceleration
+
+**Cloud Deployment Compatibility:**
+- ✅ AWS EC2 (t3.medium or higher, no GPU instances needed)
+- ✅ Google Cloud Compute Engine (n1-standard-2 or higher)
+- ✅ Azure Virtual Machines (Standard B2s or higher)
+- ✅ Docker containers on any CPU-only infrastructure
+- ✅ Kubernetes clusters without GPU node pools
+
 ### **API Requirements**
 - **OpenAI API Key**: Required for AI analysis (get from [OpenAI Platform](https://platform.openai.com/api-keys))
 - **API Credits**: Approximately $0.01-0.05 per resume analysis
@@ -138,6 +161,62 @@ Before installing SmartMatch Resume Analyzer, ensure your system meets these req
 ### **Network Requirements**
 - Internet connection for API calls and dependency installation
 - Access to OpenAI API endpoints (not blocked by corporate firewalls)
+
+## 📦 **Dependencies Installation**
+
+### **Automatic Installation (Recommended)**
+The project includes automated setup that handles all dependencies:
+
+```bash
+git clone https://github.com/triepod-ai/smartmatch-resume-advisor
+cd smartmatch-resume-advisor
+npm run setup  # Installs all dependencies automatically
+```
+
+### **Manual Installation (Alternative)**
+If you prefer to install dependencies manually:
+
+#### **System Dependencies**
+1. **Python 3.11+**: Download from [python.org](https://python.org) or use your system package manager
+2. **Node.js 16+**: Download from [nodejs.org](https://nodejs.org) or use nvm
+3. **npm 8+**: Comes with Node.js
+
+#### **Backend Dependencies**
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+**Backend packages include:**
+- `fastapi` - Web framework for the API
+- `langchain` - NLP pipeline orchestration
+- `langchain-openai` - OpenAI integration
+- `openai` - OpenAI Python SDK
+- `pydantic` - Data validation and type safety
+- `uvicorn` - ASGI server for FastAPI
+- `python-dotenv` - Environment variable management
+
+#### **Frontend Dependencies**
+```bash
+cd frontend
+npm install
+```
+
+**Frontend packages include:**
+- `next` - React framework with App Router
+- `react` - UI library
+- `typescript` - Type safety for JavaScript
+- `tailwindcss` - Utility-first CSS framework
+- `axios` - HTTP client for API calls
+- `react-hook-form` - Form management
+
+### **Dependency Verification**
+After installation, verify all dependencies are working:
+```bash
+npm run validate  # Comprehensive dependency check
+```
 
 ## ⚡ **Quick Start - Get Running in 3 Minutes**
 
@@ -170,7 +249,7 @@ Open http://localhost:3000 and upload your first resume!
 
 Using our included sample data, see how SmartMatch transforms a software engineer's resume for an ML engineering role:
 
-**Sample Input**: [Software Engineer Resume](examples/sample_resume.txt) + [ML Engineer Job](examples/sample_job_description.txt)
+**Sample Input**: [Software Engineer Resume](data/sample_resume.txt) + [ML Engineer Job](data/sample_job_description.txt)
 
 **Expected Output**: 
 - 📊 Match Score: 68%
@@ -205,7 +284,7 @@ Using our included sample data, see how SmartMatch transforms a software enginee
   - [Part 2: Analysis Pipeline](02_Analysis_Pipeline.ipynb) - Core AI engine and LangChain integration
   - [Part 3: Results and Interpretation](03_Results_and_Interpretation.ipynb) - Live analysis and insights
 - [🏗️ **Architecture Guide**](docs/ARCHITECTURE.md) - Technical implementation details and design patterns
-- [📊 **Sample Analysis**](examples/SAMPLE_ANALYSIS_OUTPUT.md) - Real-world analysis output with detailed explanations
+- [📊 **Sample Analysis**](data/SAMPLE_ANALYSIS_OUTPUT.md) - Real-world analysis output with detailed explanations
 - [⚙️ **Development Setup**](CLAUDE.md) - Complete setup instructions and development workflow
 - [📖 **API Reference**](http://localhost:8000/docs) - Interactive API documentation (when running locally)
 
@@ -484,6 +563,29 @@ We welcome contributions! Whether you're fixing bugs, adding features, or improv
 - All tests must pass: `npm run test`
 - New features require tests
 - Follow existing code style and patterns
+
+## 👥 **Maintainers & Support**
+
+### **Project Maintainers**
+**SmartMatch Team**  
+📧 Email: contact@smartmatchresume.com  
+🐙 GitHub: [@triepod-ai](https://github.com/triepod-ai)  
+🌐 Repository: [smartmatch-resume-advisor](https://github.com/triepod-ai/smartmatch-resume-advisor)
+
+### **Getting Help**
+- **Issues & Bug Reports**: [GitHub Issues](https://github.com/triepod-ai/smartmatch-resume-advisor/issues)
+- **Feature Requests**: [GitHub Discussions](https://github.com/triepod-ai/smartmatch-resume-advisor/discussions)
+- **Technical Support**: contact@smartmatchresume.com
+- **Documentation**: See our [comprehensive guides](docs/) and [interactive tutorials](notebooks/)
+
+### **Response Times**
+- **Critical Issues**: 24-48 hours
+- **Bug Reports**: 2-5 business days
+- **Feature Requests**: 1-2 weeks
+- **General Questions**: 3-7 business days
+
+### **Contributing Guidelines**
+Before contributing, please review our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## 📄 **License**
 

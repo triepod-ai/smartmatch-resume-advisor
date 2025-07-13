@@ -1,5 +1,6 @@
 """Main FastAPI application for Resume Analyzer."""
 
+from typing import Dict, Any
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse

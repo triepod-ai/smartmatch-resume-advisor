@@ -21,6 +21,15 @@ from app.chains.prompts import (
     MATCH_ANALYSIS_PROMPT,
     BULLET_IMPROVEMENT_PROMPT
 )
+from app.exceptions import (
+    AnalysisError,
+    ValidationError,
+    APIError,
+    ModelError,
+    DataProcessingError,
+    TimeoutError,
+    RateLimitError
+)
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +82,30 @@ class ResumeAnalyzer:
         """Perform complete resume analysis."""
         start_time = time.time()
         
+        # Input validation with custom exceptions
+        if not resume_text or not resume_text.strip():
+            raise ValidationError(
+                "Resume text cannot be empty",
+                field_name="resume_text",
+                validation_type="required"
+            )
+        
+        if not job_description or not job_description.strip():
+            raise ValidationError(
+                "Job description cannot be empty",
+                field_name="job_description", 
+                validation_type="required"
+            )
+        
+        if len(resume_text.strip()) < 50:
+            raise ValidationError(
+                "Resume text must be at least 50 characters long",
+                field_name="resume_text",
+                validation_type="min_length",
+                min_length=50,
+                actual_length=len(resume_text.strip())
+            )
+        
         try:
             # Extract keywords from both texts and generate embeddings in parallel
             resume_keywords_task = self._extract_keywords(resume_text, "resume")
@@ -121,9 +154,19 @@ class ResumeAnalyzer:
                 processing_time=processing_time
             )
             
+        except ValidationError:
+            # Re-raise validation errors as they are already properly typed
+            raise
+        except APIError:
+            # Re-raise API errors as they are already properly typed
+            raise
         except Exception as e:
             logger.error(f"Analysis error: {str(e)}", exc_info=True)
-            raise
+            raise AnalysisError(
+                f"Failed to complete resume analysis: {str(e)}", 
+                analysis_type="full_analysis",
+                processing_stage="main_pipeline"
+            )
 
     async def _extract_keywords(self, text: str, context: str) -> List[str]:
         """Extract keywords from text."""
@@ -133,7 +176,12 @@ class ResumeAnalyzer:
             return keywords[:30]  # Limit to 30 keywords
         except Exception as e:
             logger.error(f"Keyword extraction error: {str(e)}")
-            return []
+            # For keyword extraction, we can continue with empty list as fallback
+            raise DataProcessingError(
+                f"Failed to extract keywords from {context}: {str(e)}",
+                data_type=context,
+                processing_step="keyword_extraction"
+            )
     
     async def _perform_semantic_analysis(self, resume_text: str, job_description: str) -> float:
         """Perform semantic similarity analysis using FAISS vector search."""
