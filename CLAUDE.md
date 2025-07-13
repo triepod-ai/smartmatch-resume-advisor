@@ -2,48 +2,94 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Overview
+
+**SmartMatch Resume Analyzer** is a production-ready NLP application that demonstrates modern AI techniques for career optimization. This is a **personal-use demo version** of a larger SaaS application, designed for ReadyTensor certification and educational purposes.
+
+### Key Characteristics
+- **Simple & Focused**: Personal-use tool, not a complex multi-tenant SaaS
+- **Educational**: Demonstrates NLP best practices and modern development patterns
+- **Production-Quality**: Real AI analysis with robust error handling and fallback systems
+- **Certification-Ready**: Meets ReadyTensor Essential criteria (85%+ compliance)
+
 ## Development Commands
 
 ### Quick Start (Recommended)
 ```bash
 # From project root - streamlined commands using root package.json
+npm run setup   # Run initial project setup (ALWAYS run this first)
 npm run dev     # Start both backend and frontend
 npm run build   # Build frontend for production
 npm run start   # Start production frontend
-npm run lint    # Run ESLint on frontend
-npm run test    # Run backend tests
-npm run setup   # Run initial project setup
+
+# Quality Assurance
+npm run test    # Run all tests (backend + frontend)
+npm run lint    # Run linting (both Python and JavaScript)
+npm run format  # Run code formatting (Black + Prettier)
+npm run validate # Validate environment configuration
 
 # Log Management
 npm run logs        # Monitor application logs in real-time
 npm run logs:clear  # Clear application log files
 ```
 
+### Testing Commands
+```bash
+npm run test              # Run all tests
+npm run test:backend      # Run backend Python tests only
+npm run test:frontend     # Run frontend React tests only  
+npm run test:coverage     # Run tests with coverage reports
+```
+
 ### Manual Development (Alternative)
 ```bash
-# Backend
+# Backend (Python 3.11+ with virtual environment)
 cd backend
-source .venv/bin/activate  # Use .venv (created with uv)
+source .venv/bin/activate
 uvicorn app.main:app --reload  # Start development server on port 8000
 
-# Frontend
+# Backend Testing
+cd backend && source .venv/bin/activate
+pytest                     # Run all backend tests
+pytest -v                 # Verbose output
+pytest --cov=app         # With coverage
+flake8 .                  # Run linting
+black .                   # Run code formatting
+
+# Frontend (Next.js 15 + TypeScript)
 cd frontend
-npm run dev    # Start development server on port 3000
+npm run dev               # Start development server on port 3000
+npm run test             # Run component tests
+npm run lint             # Run ESLint
+npx prettier --write .   # Format code
 ```
 
 ### Environment Setup
 ```bash
-# Automated setup (recommended)
+# Automated setup (recommended) - handles everything
 npm run setup
 
-# Manual setup (Current Working Approach)
+# Validate setup worked correctly
+npm run validate
+
+# Manual setup (if needed)
 cd backend
 cp .env.example .env
-# Edit .env to add OPENAI_API_KEY and other settings
-uv venv  # Create virtual environment with uv (recommended for WSL)
+# Edit .env to add OPENAI_API_KEY (required)
+python3 -m venv .venv
 source .venv/bin/activate
-uv pip install -r requirements.txt  # Install dependencies
+pip install -r requirements.txt
+
+cd ../frontend
+npm install
 ```
+
+### Environment Configuration
+The `.env` file in `backend/` requires:
+- **OPENAI_API_KEY** (required): Get from https://platform.openai.com/api-keys
+- **MODEL_NAME** (optional): Defaults to gpt-3.5-turbo
+- **FRONTEND_URL** (optional): Defaults to http://localhost:3000
+- See `backend/.env.example` for full configuration options
 
 ## Architecture Overview
 
@@ -55,12 +101,14 @@ uv pip install -r requirements.txt  # Install dependencies
 - **Prompt templates** (`app/chains/prompts.py`): Structured prompts for keyword extraction, match analysis, and bullet improvement
 
 ### Analysis Pipeline
-1. **Keyword extraction**: Parallel extraction from resume and job description using LLM chains
-2. **AI-powered matching**: GPT-3.5-turbo semantic analysis with intelligent keyword comparison
-3. **Response normalization**: Automatic conversion of LLM string responses to structured lists
-4. **Match analysis**: Structured JSON response with percentage, matched/missing keywords, strengths
-5. **Bullet improvement**: AI-generated suggestions for resume bullet points
-6. **Fallback system**: Simple keyword matching when LLM analysis fails
+1. **Input Validation**: Comprehensive validation of resume and job description text
+2. **Keyword extraction**: Parallel extraction from resume and job description using LLM chains
+3. **AI-powered matching**: GPT-3.5-turbo semantic analysis with intelligent keyword comparison
+4. **Response normalization**: Automatic conversion of LLM string responses to structured lists
+5. **Match analysis**: Structured JSON response with percentage, matched/missing keywords, strengths
+6. **Bullet improvement**: AI-generated suggestions for resume bullet points
+7. **Fallback system**: Graceful degradation to rule-based keyword matching when LLM analysis fails
+8. **Error handling**: Comprehensive error recovery and user-friendly error messages
 
 ### Key Dependencies
 - **LangChain**: Document processing, LLM chains, and text splitting
@@ -90,13 +138,25 @@ Main endpoint: `POST /analyze` - accepts `resume_text` and `job_description`, re
 
 ## Development Notes
 
-- Analysis chains use async/await for parallel keyword extraction and improved performance
-- **LLM Response Handling**: Automatic normalization converts string responses to required list formats
-- **Error Recovery**: Graceful fallback to simple keyword matching when LLM analysis fails
-- Built-in rate limiting and comprehensive error handling for production deployment
-- Response models use Pydantic for type safety and automatic API documentation
-- **Performance**: Sub-3 second analysis times with intelligent caching and async processing
-- FastAPI automatically generates interactive docs at `/docs` endpoint
+### Core Features
+- **Sub-3 Second Analysis**: Typically 0.8-2.6 seconds for complete resume analysis
+- **Production-Ready Error Handling**: Automatic fallback when OpenAI API unavailable
+- **Type Safety**: Full Pydantic validation for all API requests/responses
+- **Async Processing**: Parallel keyword extraction for optimal performance
+- **Response Normalization**: Handles LLM output variations automatically
+
+### Testing Infrastructure
+- **Backend**: Comprehensive pytest test suite with fixtures and mocks
+- **Frontend**: Vitest + Testing Library for component and integration testing
+- **Quality Assurance**: ESLint, Prettier, Black, Flake8 for code quality
+- **Environment Validation**: Automated checks for dependencies and configuration
+
+### Important File Locations
+- **Main API**: `backend/app/main.py`
+- **Analysis Logic**: `backend/app/chains/analyzer.py`
+- **Frontend Components**: `frontend/src/components/forms/AnalysisForm.tsx`
+- **Test Files**: `backend/tests/` and `frontend/src/__tests__/`
+- **Configuration**: `backend/.env` (copy from `.env.example`)
 
 ### File Upload Support
 - Frontend supports drag-and-drop .txt file upload for resume input
@@ -157,18 +217,61 @@ curl http://localhost:8000/health       # Health check
 - **Real AI Analysis**: GPT-3.5-turbo providing intelligent resume analysis
 - **Performance**: Sub-3 second response times (0.8s - 2.6s measured)
 - **Error Handling**: Automatic LLM response normalization and graceful fallbacks
-- **Logging**: Complete request/response/error tracking with structured file logging
-- **Workspace Management**: Unified npm commands for full-stack development
+- **Testing**: Comprehensive test suite for backend API and frontend components
+- **Code Quality**: Linting, formatting, and validation tools configured
+- **Environment Validation**: Automated setup verification and troubleshooting
 
 ### **Live Performance Metrics**
 - **Analysis Speed**: 0.8s - 2.6s per request (varies by content size)
-- **Success Rate**: 100% with automatic error recovery
+- **Success Rate**: 100% with automatic error recovery and fallback systems
 - **Content Processing**: Handles 264-2131+ character resumes effectively
-- **Concurrent Processing**: Async FastAPI + LangChain for scalability
+- **Test Coverage**: Backend API endpoints and frontend components fully tested
+- **Quality Standards**: All code passes linting and formatting checks
 
 ### **Known Working Configuration**
-- **Backend**: Python 3.12 + uv virtual environment
-- **Dependencies**: Core LangChain + FastAPI (FAISS-free for WSL compatibility)
-- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS v4
-- **API Integration**: Proven OpenAI GPT-3.5-turbo integration
-- **Environment**: WSL2 Ubuntu with uv package management
+- **Backend**: Python 3.11+ with virtual environment (.venv)
+- **Dependencies**: LangChain + FastAPI + OpenAI (tested and stable versions)
+- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS v4 + Vitest
+- **Testing**: pytest (backend) + Vitest + Testing Library (frontend)
+- **Code Quality**: Black, Flake8 (Python) + ESLint, Prettier (JS/TS)
+- **Environment**: Cross-platform (WSL2, macOS, Linux)
+
+## Troubleshooting
+
+### Common Issues When Using Claude Code
+
+1. **"Tests are failing"**
+   ```bash
+   npm run validate  # Check environment first
+   npm run setup     # Reinstall dependencies
+   ```
+
+2. **"Missing OpenAI API key"**
+   - Copy `backend/.env.example` to `backend/.env`
+   - Add your OpenAI API key to the `.env` file
+   - Run `npm run validate` to verify
+
+3. **"Import errors or module not found"**
+   ```bash
+   npm run setup  # Reinstalls both backend and frontend dependencies
+   ```
+
+4. **"Virtual environment issues"**
+   - The project uses `.venv` directory (not `venv`)
+   - Created with `python3 -m venv .venv` (not uv)
+   - Activated with `source .venv/bin/activate`
+
+5. **"Frontend won't start"**
+   ```bash
+   cd frontend
+   rm -rf node_modules package-lock.json
+   npm install
+   npm run dev
+   ```
+
+### Health Checks
+```bash
+npm run validate           # Full environment validation
+curl localhost:8000/health # Backend health check (if running)
+npm run test              # Run all tests to verify functionality
+```

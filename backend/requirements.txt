@@ -29,7 +29,10 @@ pypdf>=3.17.4
 
 # Development tools
 pytest>=7.4.4
+pytest-asyncio>=0.21.0
+httpx>=0.24.0
 black>=23.12.1
+flake8>=6.0.0
 
 # Notes:
 # - FAISS enabled for semantic similarity analysis
