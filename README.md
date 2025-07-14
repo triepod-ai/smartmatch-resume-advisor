@@ -128,13 +128,19 @@ Before installing SmartMatch Resume Analyzer, ensure your system meets these req
 
 ### **GPU Requirements**
 
-**SmartMatch Resume Analyzer is CPU-optimized and does NOT require GPU acceleration.**
+**SmartMatch Resume Analyzer is currently CPU-optimized and does NOT require GPU acceleration.**
 
-- **GPU Support**: Not required - application runs efficiently on CPU-only systems
-- **CUDA/cuDNN**: Not needed - all computations are performed via OpenAI API calls
-- **Local ML Models**: None - all machine learning inference is handled by OpenAI's cloud infrastructure
+- **Current Status**: CPU-only processing - application runs efficiently on standard hardware
+- **GPU Support**: Not required for current version - all computations performed via OpenAI API calls
+- **CUDA/cuDNN**: Not needed for current implementation
+- **Local ML Models**: None in current version - all machine learning inference handled by OpenAI's cloud infrastructure
 - **Graphics Card**: Any standard graphics card sufficient for OS display is adequate
 - **Compute Requirements**: CPU-only processing with network I/O for API calls
+
+**🚀 Future Roadmap**: CUDA support for local processing is planned for future releases to enable:
+- Local model inference for improved privacy and reduced API costs
+- Enhanced performance with GPU-accelerated text processing
+- Offline analysis capabilities for sensitive documents
 
 **Performance Notes:**
 - Analysis speed is primarily limited by network latency to OpenAI API (~1-3 seconds)

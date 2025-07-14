@@ -15,8 +15,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class Settings(BaseSettings):
-    """Application settings with comprehensive configuration management."""
+class APISettings(BaseSettings):
+    """API and security configuration settings."""
     
     # API Configuration
     api_host: str = Field(default="0.0.0.0", description="Host to bind the API server")
@@ -32,6 +32,33 @@ class Settings(BaseSettings):
     rate_limit_requests: int = Field(default=100, description="Rate limit requests per minute")
     max_request_size: int = Field(default=1024*1024, description="Maximum request size in bytes")
     
+    @validator('environment')
+    def validate_environment(cls, v):
+        """Validate environment setting."""
+        valid_environments = ['development', 'testing', 'staging', 'production']
+        if v not in valid_environments:
+            raise ValueError(f'Environment must be one of: {valid_environments}')
+        return v
+    
+    @validator('cors_origins', pre=True)
+    def parse_cors_origins(cls, v):
+        """Parse CORS origins from string or list."""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(',')]
+        return v
+    
+    def is_production(self) -> bool:
+        """Check if running in production environment."""
+        return self.environment.lower() == 'production'
+    
+    def is_development(self) -> bool:
+        """Check if running in development environment."""
+        return self.environment.lower() == 'development'
+
+
+class LLMSettings(BaseSettings):
+    """LLM and AI service configuration settings."""
+    
     # OpenAI Configuration
     openai_api_key: str = Field(description="OpenAI API key for LLM services")
     model_name: str = Field(default="gpt-3.5-turbo", description="OpenAI model to use for analysis")
@@ -46,81 +73,6 @@ class Settings(BaseSettings):
     langchain_api_key: Optional[str] = Field(default=None, description="LangSmith API key for tracing")
     langchain_project: str = Field(default="resume-analyzer", description="LangSmith project name")
     langchain_endpoint: str = Field(default="https://api.smith.langchain.com", description="LangSmith endpoint URL")
-    
-    # Analysis Configuration
-    min_match_threshold: float = Field(default=0.3, ge=0.0, le=1.0, description="Minimum keyword match threshold")
-    max_suggestions: int = Field(default=5, ge=1, le=20, description="Maximum number of suggestions to generate")
-    chunk_size: int = Field(default=1000, ge=100, le=2000, description="Text chunk size for processing")
-    chunk_overlap: int = Field(default=200, ge=0, le=500, description="Overlap between text chunks")
-    max_keywords: int = Field(default=50, ge=10, le=100, description="Maximum keywords to extract")
-    
-    # Performance Configuration
-    async_concurrency: int = Field(default=10, ge=1, le=50, description="Maximum concurrent async operations")
-    cache_ttl: int = Field(default=3600, ge=0, description="Cache TTL in seconds (0 to disable)")
-    enable_caching: bool = Field(default=True, description="Enable response caching")
-    response_compression: bool = Field(default=True, description="Enable response compression")
-    
-    # Logging Configuration
-    log_level: str = Field(default="INFO", description="Logging level")
-    log_format: str = Field(default="%(asctime)s - %(name)s - %(levelname)s - %(message)s", description="Log format string")
-    log_max_size: int = Field(default=10*1024*1024, description="Maximum log file size in bytes")
-    log_backup_count: int = Field(default=5, ge=1, le=20, description="Number of log backups to keep")
-    enable_access_logging: bool = Field(default=True, description="Enable HTTP access logging")
-    
-    # Database/Storage Configuration
-    database_url: Optional[str] = Field(default=None, description="Database connection URL")
-    redis_url: Optional[str] = Field(default="redis://localhost:6379/0", description="Redis connection URL")
-    storage_backend: str = Field(default="local", description="Storage backend (local/s3/gcs)")
-    upload_directory: str = Field(default="uploads", description="Directory for file uploads")
-    
-    # Monitoring Configuration
-    enable_metrics: bool = Field(default=True, description="Enable Prometheus metrics")
-    metrics_port: int = Field(default=8001, ge=1024, le=65535, description="Port for metrics endpoint")
-    health_check_interval: int = Field(default=30, ge=5, le=300, description="Health check interval in seconds")
-    performance_monitoring: bool = Field(default=True, description="Enable performance monitoring")
-    
-    # Feature Flags
-    enable_experimental_features: bool = Field(default=False, description="Enable experimental features")
-    enable_fallback_analysis: bool = Field(default=True, description="Enable fallback analysis when LLM fails")
-    enable_semantic_search: bool = Field(default=True, description="Enable semantic similarity search")
-    enable_batch_processing: bool = Field(default=False, description="Enable batch analysis processing")
-    
-    # Business Logic Configuration
-    supported_languages: List[str] = Field(default=["en"], description="Supported languages for analysis")
-    supported_file_types: List[str] = Field(default=["txt", "pdf", "docx"], description="Supported file types")
-    max_file_size: int = Field(default=5*1024*1024, description="Maximum file upload size in bytes")
-    analysis_timeout: int = Field(default=60, ge=10, le=300, description="Analysis timeout in seconds")
-    
-    @validator('environment')
-    def validate_environment(cls, v):
-        """Validate environment setting."""
-        valid_environments = ['development', 'testing', 'staging', 'production']
-        if v not in valid_environments:
-            raise ValueError(f'Environment must be one of: {valid_environments}')
-        return v
-    
-    @validator('log_level')
-    def validate_log_level(cls, v):
-        """Validate log level setting."""
-        valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-        if v.upper() not in valid_levels:
-            raise ValueError(f'Log level must be one of: {valid_levels}')
-        return v.upper()
-    
-    @validator('storage_backend')
-    def validate_storage_backend(cls, v):
-        """Validate storage backend setting."""
-        valid_backends = ['local', 's3', 'gcs', 'azure']
-        if v not in valid_backends:
-            raise ValueError(f'Storage backend must be one of: {valid_backends}')
-        return v
-    
-    @validator('cors_origins', pre=True)
-    def parse_cors_origins(cls, v):
-        """Parse CORS origins from string or list."""
-        if isinstance(v, str):
-            return [origin.strip() for origin in v.split(',')]
-        return v
     
     def get_openai_config(self) -> Dict[str, Any]:
         """Get OpenAI configuration as a dictionary."""
@@ -141,6 +93,29 @@ class Settings(BaseSettings):
             'project': self.langchain_project,
             'endpoint': self.langchain_endpoint
         }
+
+
+class AnalysisSettings(BaseSettings):
+    """Analysis and performance configuration settings."""
+    
+    # Analysis Configuration
+    min_match_threshold: float = Field(default=0.3, ge=0.0, le=1.0, description="Minimum keyword match threshold")
+    max_suggestions: int = Field(default=5, ge=1, le=20, description="Maximum number of suggestions to generate")
+    chunk_size: int = Field(default=1000, ge=100, le=2000, description="Text chunk size for processing")
+    chunk_overlap: int = Field(default=200, ge=0, le=500, description="Overlap between text chunks")
+    max_keywords: int = Field(default=50, ge=10, le=100, description="Maximum keywords to extract")
+    
+    # Performance Configuration
+    async_concurrency: int = Field(default=10, ge=1, le=50, description="Maximum concurrent async operations")
+    cache_ttl: int = Field(default=3600, ge=0, description="Cache TTL in seconds (0 to disable)")
+    enable_caching: bool = Field(default=True, description="Enable response caching")
+    response_compression: bool = Field(default=True, description="Enable response compression")
+    
+    # Business Logic Configuration
+    supported_languages: List[str] = Field(default=["en"], description="Supported languages for analysis")
+    supported_file_types: List[str] = Field(default=["txt", "pdf", "docx"], description="Supported file types")
+    max_file_size: int = Field(default=5*1024*1024, description="Maximum file upload size in bytes")
+    analysis_timeout: int = Field(default=60, ge=10, le=300, description="Analysis timeout in seconds")
     
     def get_analysis_config(self) -> Dict[str, Any]:
         """Get analysis configuration as a dictionary."""
@@ -152,14 +127,59 @@ class Settings(BaseSettings):
             'max_keywords': self.max_keywords,
             'timeout': self.analysis_timeout
         }
+
+
+class MonitoringSettings(BaseSettings):
+    """Logging and monitoring configuration settings."""
     
-    def is_production(self) -> bool:
-        """Check if running in production environment."""
-        return self.environment.lower() == 'production'
+    # Logging Configuration
+    log_level: str = Field(default="INFO", description="Logging level")
+    log_format: str = Field(default="%(asctime)s - %(name)s - %(levelname)s - %(message)s", description="Log format string")
+    log_max_size: int = Field(default=10*1024*1024, description="Maximum log file size in bytes")
+    log_backup_count: int = Field(default=5, ge=1, le=20, description="Number of log backups to keep")
+    enable_access_logging: bool = Field(default=True, description="Enable HTTP access logging")
     
-    def is_development(self) -> bool:
-        """Check if running in development environment."""
-        return self.environment.lower() == 'development'
+    # Monitoring Configuration
+    enable_metrics: bool = Field(default=True, description="Enable Prometheus metrics")
+    metrics_port: int = Field(default=8001, ge=1024, le=65535, description="Port for metrics endpoint")
+    health_check_interval: int = Field(default=30, ge=5, le=300, description="Health check interval in seconds")
+    performance_monitoring: bool = Field(default=True, description="Enable performance monitoring")
+    
+    @validator('log_level')
+    def validate_log_level(cls, v):
+        """Validate log level setting."""
+        valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+        if v.upper() not in valid_levels:
+            raise ValueError(f'Log level must be one of: {valid_levels}')
+        return v.upper()
+
+
+class StorageSettings(BaseSettings):
+    """Storage and feature flag configuration settings."""
+    
+    # Database/Storage Configuration
+    database_url: Optional[str] = Field(default=None, description="Database connection URL")
+    redis_url: Optional[str] = Field(default="redis://localhost:6379/0", description="Redis connection URL")
+    storage_backend: str = Field(default="local", description="Storage backend (local/s3/gcs)")
+    upload_directory: str = Field(default="uploads", description="Directory for file uploads")
+    
+    # Feature Flags
+    enable_experimental_features: bool = Field(default=False, description="Enable experimental features")
+    enable_fallback_analysis: bool = Field(default=True, description="Enable fallback analysis when LLM fails")
+    enable_semantic_search: bool = Field(default=True, description="Enable semantic similarity search")
+    enable_batch_processing: bool = Field(default=False, description="Enable batch analysis processing")
+    
+    @validator('storage_backend')
+    def validate_storage_backend(cls, v):
+        """Validate storage backend setting."""
+        valid_backends = ['local', 's3', 'gcs', 'azure']
+        if v not in valid_backends:
+            raise ValueError(f'Storage backend must be one of: {valid_backends}')
+        return v
+
+
+class Settings(APISettings, LLMSettings, AnalysisSettings, MonitoringSettings, StorageSettings):
+    """Main application settings inheriting from all configuration categories."""
     
     def setup_environment_logging(self) -> None:
         """Setup environment-specific logging configuration."""

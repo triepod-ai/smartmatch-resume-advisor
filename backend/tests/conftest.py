@@ -1,6 +1,7 @@
 import pytest
 import sys
 import os
+from typing import List, Generator
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -10,13 +11,13 @@ from app.main import app
 
 
 @pytest.fixture(scope="module")
-def client():
+def client() -> TestClient:
     """Create a test client for the FastAPI app."""
     return TestClient(app)
 
 
 @pytest.fixture
-def sample_resume():
+def sample_resume() -> str:
     """Sample resume text for testing."""
     return """
     John Doe
@@ -46,7 +47,7 @@ def sample_resume():
 
 
 @pytest.fixture
-def sample_job_description():
+def sample_job_description() -> str:
     """Sample job description for testing."""
     return """
     Senior Software Engineer
@@ -73,7 +74,7 @@ def sample_job_description():
 
 
 @pytest.fixture
-def expected_analysis_fields():
+def expected_analysis_fields() -> List[str]:
     """Expected fields in analysis response."""
     return [
         "match_percentage",
