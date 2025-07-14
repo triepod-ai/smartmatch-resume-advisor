@@ -1,4 +1,8 @@
-"""Configuration settings for the Resume Analyzer API."""
+"""Configuration settings for the Resume Analyzer API.
+
+Copyright (c) 2024 SmartMatch Resume Analyzer
+Licensed under the MIT License. See LICENSE file for details.
+"""
 
 import os
 import logging
@@ -18,6 +22,7 @@ class Settings(BaseSettings):
     api_host: str = Field(default="0.0.0.0", description="Host to bind the API server")
     api_port: int = Field(default=8000, ge=1024, le=65535, description="Port for the API server")
     frontend_url: str = Field(default="http://localhost:3000", description="Frontend application URL for CORS")
+    frontend_url_alt: Optional[str] = Field(default=None, description="Alternative frontend URL for CORS")
     debug: bool = Field(default=False, description="Enable debug mode")
     environment: str = Field(default="development", description="Environment mode (development/production)")
     

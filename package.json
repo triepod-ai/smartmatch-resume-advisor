@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "AI-powered resume analysis application with FastAPI backend and Next.js frontend",
   "scripts": {
-    "dev": "concurrently \"cd backend && bash -c 'source .venv/bin/activate && uvicorn app.main:app --reload'\" \"cd frontend && npm run dev\"",
+    "dev": "concurrently \"cd backend && bash -c 'source .venv/bin/activate && uvicorn app.main:app --reload --port 8002'\" \"cd frontend && PORT=3002 npm run dev\"",
+    "dev:clean": "./kill-ports.sh && npm run dev",
+    "kill": "./kill-ports.sh",
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm run start",
     "lint": "npm run lint:frontend && npm run lint:backend",

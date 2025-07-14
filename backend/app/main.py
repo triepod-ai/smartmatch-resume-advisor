@@ -1,4 +1,8 @@
-"""Main FastAPI application for Resume Analyzer."""
+"""Main FastAPI application for Resume Analyzer.
+
+Copyright (c) 2024 SmartMatch Resume Analyzer
+Licensed under the MIT License. See LICENSE file for details.
+"""
 
 from typing import Dict, Any
 from fastapi import FastAPI, HTTPException, Request
@@ -54,7 +58,12 @@ async def log_requests(request: Request, call_next):
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url, "http://localhost:3000"],
+    allow_origins=[
+        settings.frontend_url, 
+        "http://localhost:3000", 
+        "http://localhost:3002",
+        "http://127.0.0.1:3002"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

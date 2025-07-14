@@ -3,6 +3,9 @@ Custom exception classes for SmartMatch Resume Analyzer.
 
 This module provides specialized exception classes for different types of errors
 that can occur during resume analysis processing.
+
+Copyright (c) 2024 SmartMatch Resume Analyzer
+Licensed under the MIT License. See LICENSE file for details.
 """
 
 from typing import Optional, Dict, Any

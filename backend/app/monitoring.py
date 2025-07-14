@@ -1,4 +1,8 @@
-"""Advanced monitoring and metrics collection for the Resume Analyzer."""
+"""Advanced monitoring and metrics collection for the Resume Analyzer.
+
+Copyright (c) 2024 SmartMatch Resume Analyzer
+Licensed under the MIT License. See LICENSE file for details.
+"""
 
 import time
 import logging

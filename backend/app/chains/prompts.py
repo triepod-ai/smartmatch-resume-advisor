@@ -44,13 +44,13 @@ Format your response as JSON with keys:
 - improvements: array of strings (each improvement as separate item)
 
 Example format:
-{
+{{
   "match_percentage": 75,
   "matched_keywords": ["Python", "AWS", "Docker"],
   "missing_keywords": ["Kubernetes", "React"],
   "strengths": ["Strong Python experience", "Cloud infrastructure knowledge"],
   "improvements": ["Add Kubernetes experience", "Include frontend skills"]
-}
+}}
 """
 )
 
