@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
 interface KeywordComparisonProps {
   matchedKeywords: string[];
   missingKeywords: string[];
 }
 
-export const KeywordComparison = ({ matchedKeywords, missingKeywords }: KeywordComparisonProps) => {
+export const KeywordComparison = ({
+  matchedKeywords,
+  missingKeywords,
+}: KeywordComparisonProps) => {
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold text-gray-800">Keyword Analysis</h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Matched Keywords */}
         <div className="bg-green-50 p-6 rounded-lg border border-green-200">
@@ -60,7 +63,9 @@ export const KeywordComparison = ({ matchedKeywords, missingKeywords }: KeywordC
               </p>
             </>
           ) : (
-            <p className="text-red-600 text-sm">Great! No missing keywords detected</p>
+            <p className="text-red-600 text-sm">
+              Great! No missing keywords detected
+            </p>
           )}
         </div>
       </div>
@@ -72,11 +77,14 @@ export const KeywordComparison = ({ matchedKeywords, missingKeywords }: KeywordC
           <h4 className="text-md font-semibold text-blue-800">Summary</h4>
         </div>
         <p className="text-blue-700 text-sm">
-          Your resume contains <strong>{matchedKeywords.length}</strong> relevant keywords and is missing{' '}
-          <strong>{missingKeywords.length}</strong> important terms from the job description.
+          Your resume contains <strong>{matchedKeywords.length}</strong>{" "}
+          relevant keywords and is missing{" "}
+          <strong>{missingKeywords.length}</strong> important terms from the job
+          description.
           {missingKeywords.length > 0 && (
             <span className="block mt-1">
-              Focus on naturally incorporating the missing keywords to improve your match score.
+              Focus on naturally incorporating the missing keywords to improve
+              your match score.
             </span>
           )}
         </p>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 interface AnalyzeButtonProps {
   onClick: () => void;
@@ -6,7 +6,11 @@ interface AnalyzeButtonProps {
   disabled?: boolean;
 }
 
-export const AnalyzeButton = ({ onClick, isLoading, disabled = false }: AnalyzeButtonProps) => {
+export const AnalyzeButton = ({
+  onClick,
+  isLoading,
+  disabled = false,
+}: AnalyzeButtonProps) => {
   const isDisabled = disabled || isLoading;
 
   return (
@@ -18,8 +22,8 @@ export const AnalyzeButton = ({ onClick, isLoading, disabled = false }: AnalyzeB
         flex items-center justify-center space-x-2
         ${
           isDisabled
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         }
       `}
     >

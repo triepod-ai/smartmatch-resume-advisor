@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 interface ResumeInputFormProps {
   value: string;
@@ -8,7 +8,11 @@ interface ResumeInputFormProps {
   disabled?: boolean;
 }
 
-export const ResumeInputForm = ({ value, onChange, disabled = false }: ResumeInputFormProps) => {
+export const ResumeInputForm = ({
+  value,
+  onChange,
+  disabled = false,
+}: ResumeInputFormProps) => {
   const [dragActive, setDragActive] = useState(false);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -25,10 +29,10 @@ export const ResumeInputForm = ({ value, onChange, disabled = false }: ResumeInp
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+      if (file.type === "text/plain" || file.name.endsWith(".txt")) {
         const reader = new FileReader();
         reader.onload = (event) => {
           const text = event.target?.result as string;
@@ -54,12 +58,15 @@ export const ResumeInputForm = ({ value, onChange, disabled = false }: ResumeInp
   return (
     <div className="space-y-4">
       <div>
-        <label htmlFor="resume-text" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="resume-text"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Resume Content
         </label>
         <div
           className={`relative ${
-            dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+            dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"
           } border-2 border-dashed rounded-lg transition-colors`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -76,12 +83,14 @@ export const ResumeInputForm = ({ value, onChange, disabled = false }: ResumeInp
           />
           {dragActive && (
             <div className="absolute inset-0 flex items-center justify-center bg-blue-50 bg-opacity-90 rounded-lg">
-              <p className="text-blue-600 font-medium">Drop your resume file here</p>
+              <p className="text-blue-600 font-medium">
+                Drop your resume file here
+              </p>
             </div>
           )}
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-4">
         <label className="flex items-center cursor-pointer">
           <input
@@ -95,9 +104,7 @@ export const ResumeInputForm = ({ value, onChange, disabled = false }: ResumeInp
             📁 Upload Text File
           </div>
         </label>
-        <span className="text-xs text-gray-500">
-          Supports .txt files
-        </span>
+        <span className="text-xs text-gray-500">Supports .txt files</span>
       </div>
     </div>
   );

@@ -76,6 +76,13 @@ npm run validate
 cd backend
 cp .env.example .env
 # Edit .env to add OPENAI_API_KEY (required)
+
+# For WSL/Linux (recommended - avoids externally-managed-environment issues)
+uv venv .venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+
+# Alternative (standard Python venv)
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt

@@ -78,9 +78,9 @@ def expected_analysis_fields() -> List[str]:
     """Expected fields in analysis response."""
     return [
         "match_percentage",
-        "matched_keywords", 
+        "matched_keywords",
         "missing_keywords",
         "suggestions",
         "strengths",
-        "areas_for_improvement"
+        "areas_for_improvement",
     ]

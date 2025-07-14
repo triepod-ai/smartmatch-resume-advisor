@@ -1,5 +1,5 @@
-import React from 'react'
-import { render as rtlRender } from '@testing-library/react'
+import React from "react";
+import { render as rtlRender } from "@testing-library/react";
 
 // Simple wrapper for tests - no complex providers needed for demo
 function render(ui, options = {}) {
@@ -7,9 +7,9 @@ function render(ui, options = {}) {
     // Add any global providers here if needed
     wrapper: ({ children }) => <div data-testid="test-wrapper">{children}</div>,
     ...options,
-  })
+  });
 }
 
 // Re-export everything
-export * from '@testing-library/react'
-export { render }
+export * from "@testing-library/react";
+export { render };

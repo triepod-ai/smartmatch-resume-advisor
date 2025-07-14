@@ -12,12 +12,17 @@ Focus on technical skills, tools, frameworks, soft skills, and domain-specific t
 {text}
 
 Return a comma-separated list of keywords (maximum 30 keywords):
-"""
+""",
 )
 
 # Match analysis prompt
 MATCH_ANALYSIS_PROMPT = PromptTemplate(
-    input_variables=["resume_keywords", "job_keywords", "resume_text", "job_description"],
+    input_variables=[
+        "resume_keywords",
+        "job_keywords",
+        "resume_text",
+        "job_description",
+    ],
     template="""Analyze how well this resume matches the job description.
 
 Job Description Keywords: {job_keywords}
@@ -51,7 +56,7 @@ Example format:
   "strengths": ["Strong Python experience", "Cloud infrastructure knowledge"],
   "improvements": ["Add Kubernetes experience", "Include frontend skills"]
 }}
-"""
+""",
 )
 
 # Bullet point improvement prompt
@@ -78,5 +83,5 @@ For each bullet point, provide:
 3. A brief explanation of the improvements
 
 Format as JSON array with objects containing: original, improved, reason
-"""
+""",
 )

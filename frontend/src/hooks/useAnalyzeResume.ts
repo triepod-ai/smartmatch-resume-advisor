@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { analyzeResume } from '../lib/api';
-import { AnalysisRequest, AnalysisState } from '../types';
+import { useState } from "react";
+import { analyzeResume } from "../lib/api";
+import { AnalysisRequest, AnalysisState } from "../types";
 
 export const useAnalyzeResume = () => {
   const [state, setState] = useState<AnalysisState>({
@@ -27,7 +27,10 @@ export const useAnalyzeResume = () => {
       setState({
         isLoading: false,
         result: null,
-        error: error instanceof Error ? error.message : 'An unexpected error occurred',
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
       });
     }
   };

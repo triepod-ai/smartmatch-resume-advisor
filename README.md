@@ -186,10 +186,18 @@ If you prefer to install dependencies manually:
 1. **Python 3.11+**: Download from [python.org](https://python.org) or use your system package manager
 2. **Node.js 16+**: Download from [nodejs.org](https://nodejs.org) or use nvm
 3. **npm 8+**: Comes with Node.js
+4. **uv** (recommended for WSL/Linux): `pip install uv` - Fast Python package manager
 
 #### **Backend Dependencies**
 ```bash
 cd backend
+
+# Recommended for WSL/Linux (avoids externally-managed-environment issues)
+uv venv .venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+
+# Alternative (standard Python venv)
 python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt

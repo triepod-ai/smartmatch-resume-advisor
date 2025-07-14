@@ -13,12 +13,12 @@ from typing import Optional, Dict, Any
 
 class SmartMatchError(Exception):
     """Base exception class for all SmartMatch Resume Analyzer errors."""
-    
+
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         self.message = message
         self.details = details or {}
         super().__init__(self.message)
-    
+
     def __str__(self) -> str:
         if self.details:
             return f"{self.message} - Details: {self.details}"
@@ -27,105 +27,126 @@ class SmartMatchError(Exception):
 
 class AnalysisError(SmartMatchError):
     """Raised when errors occur during resume analysis processing."""
-    
-    def __init__(self, message: str, analysis_type: Optional[str] = None, 
-                 processing_stage: Optional[str] = None, **kwargs):
+
+    def __init__(
+        self,
+        message: str,
+        analysis_type: Optional[str] = None,
+        processing_stage: Optional[str] = None,
+        **kwargs,
+    ):
         details = {
             "analysis_type": analysis_type,
             "processing_stage": processing_stage,
-            **kwargs
+            **kwargs,
         }
         super().__init__(message, details)
 
 
 class ValidationError(SmartMatchError):
     """Raised when input validation fails."""
-    
-    def __init__(self, message: str, field_name: Optional[str] = None, 
-                 validation_type: Optional[str] = None, **kwargs):
+
+    def __init__(
+        self,
+        message: str,
+        field_name: Optional[str] = None,
+        validation_type: Optional[str] = None,
+        **kwargs,
+    ):
         details = {
             "field_name": field_name,
             "validation_type": validation_type,
-            **kwargs
+            **kwargs,
         }
         super().__init__(message, details)
 
 
 class ConfigurationError(SmartMatchError):
     """Raised when configuration issues are detected."""
-    
-    def __init__(self, message: str, config_key: Optional[str] = None, 
-                 config_file: Optional[str] = None, **kwargs):
-        details = {
-            "config_key": config_key,
-            "config_file": config_file,
-            **kwargs
-        }
+
+    def __init__(
+        self,
+        message: str,
+        config_key: Optional[str] = None,
+        config_file: Optional[str] = None,
+        **kwargs,
+    ):
+        details = {"config_key": config_key, "config_file": config_file, **kwargs}
         super().__init__(message, details)
 
 
 class APIError(SmartMatchError):
     """Raised when external API calls fail."""
-    
-    def __init__(self, message: str, api_name: Optional[str] = None, 
-                 status_code: Optional[int] = None, response: Optional[str] = None, **kwargs):
+
+    def __init__(
+        self,
+        message: str,
+        api_name: Optional[str] = None,
+        status_code: Optional[int] = None,
+        response: Optional[str] = None,
+        **kwargs,
+    ):
         details = {
             "api_name": api_name,
             "status_code": status_code,
             "response": response,
-            **kwargs
+            **kwargs,
         }
         super().__init__(message, details)
 
 
 class ModelError(SmartMatchError):
     """Raised when machine learning model operations fail."""
-    
-    def __init__(self, message: str, model_name: Optional[str] = None, 
-                 operation: Optional[str] = None, **kwargs):
-        details = {
-            "model_name": model_name,
-            "operation": operation,
-            **kwargs
-        }
+
+    def __init__(
+        self,
+        message: str,
+        model_name: Optional[str] = None,
+        operation: Optional[str] = None,
+        **kwargs,
+    ):
+        details = {"model_name": model_name, "operation": operation, **kwargs}
         super().__init__(message, details)
 
 
 class DataProcessingError(SmartMatchError):
     """Raised when data processing operations fail."""
-    
-    def __init__(self, message: str, data_type: Optional[str] = None, 
-                 processing_step: Optional[str] = None, **kwargs):
-        details = {
-            "data_type": data_type,
-            "processing_step": processing_step,
-            **kwargs
-        }
+
+    def __init__(
+        self,
+        message: str,
+        data_type: Optional[str] = None,
+        processing_step: Optional[str] = None,
+        **kwargs,
+    ):
+        details = {"data_type": data_type, "processing_step": processing_step, **kwargs}
         super().__init__(message, details)
 
 
 class TimeoutError(SmartMatchError):
     """Raised when operations exceed their timeout limits."""
-    
-    def __init__(self, message: str, operation: Optional[str] = None, 
-                 timeout_seconds: Optional[float] = None, **kwargs):
-        details = {
-            "operation": operation,
-            "timeout_seconds": timeout_seconds,
-            **kwargs
-        }
+
+    def __init__(
+        self,
+        message: str,
+        operation: Optional[str] = None,
+        timeout_seconds: Optional[float] = None,
+        **kwargs,
+    ):
+        details = {"operation": operation, "timeout_seconds": timeout_seconds, **kwargs}
         super().__init__(message, details)
 
 
 class RateLimitError(APIError):
     """Raised when API rate limits are exceeded."""
-    
-    def __init__(self, message: str = "API rate limit exceeded", 
-                 retry_after: Optional[int] = None, **kwargs):
-        details = {
-            "retry_after": retry_after,
-            **kwargs
-        }
+
+    def __init__(
+        self,
+        message: str = "API rate limit exceeded",
+        retry_after: Optional[int] = None,
+        **kwargs,
+    ):
+        details = {"retry_after": retry_after, **kwargs}
         super().__init__(message, api_name="openai", **details)
 
 

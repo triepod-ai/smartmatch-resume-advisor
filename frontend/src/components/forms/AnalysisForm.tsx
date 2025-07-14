@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ResumeInputForm } from './ResumeInputForm';
-import { JobDescriptionForm } from './JobDescriptionForm';
-import { AnalyzeButton } from './AnalyzeButton';
-import { MatchPercentage } from '../results/MatchPercentage';
-import { KeywordComparison } from '../results/KeywordComparison';
-import { BulletSuggestions } from '../results/BulletSuggestions';
-import { useAnalyzeResume } from '../../hooks/useAnalyzeResume';
-import { sampleResume, sampleJobDescription } from '../../lib/sampleData';
+import { useState } from "react";
+import { ResumeInputForm } from "./ResumeInputForm";
+import { JobDescriptionForm } from "./JobDescriptionForm";
+import { AnalyzeButton } from "./AnalyzeButton";
+import { MatchPercentage } from "../results/MatchPercentage";
+import { KeywordComparison } from "../results/KeywordComparison";
+import { BulletSuggestions } from "../results/BulletSuggestions";
+import { useAnalyzeResume } from "../../hooks/useAnalyzeResume";
+import { sampleResume, sampleJobDescription } from "../../lib/sampleData";
 
 export const AnalysisForm = () => {
-  const [resumeText, setResumeText] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
+  const [resumeText, setResumeText] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const { isLoading, result, error, analyze, reset } = useAnalyzeResume();
 
   const handleAnalyze = async () => {
     if (!resumeText.trim() || !jobDescription.trim()) {
-      alert('Please fill in both the resume and job description fields.');
+      alert("Please fill in both the resume and job description fields.");
       return;
     }
 
@@ -28,8 +28,8 @@ export const AnalysisForm = () => {
   };
 
   const handleReset = () => {
-    setResumeText('');
-    setJobDescription('');
+    setResumeText("");
+    setJobDescription("");
     reset();
   };
 
@@ -39,7 +39,8 @@ export const AnalysisForm = () => {
     reset();
   };
 
-  const canAnalyze = resumeText.trim().length >= 50 && jobDescription.trim().length >= 50;
+  const canAnalyze =
+    resumeText.trim().length >= 50 && jobDescription.trim().length >= 50;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
@@ -49,8 +50,9 @@ export const AnalysisForm = () => {
           SmartMatch Resume Analyzer
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Get AI-powered insights to optimize your resume for any job description. 
-          Analyze keyword matches, get improvement suggestions, and boost your chances of landing interviews.
+          Get AI-powered insights to optimize your resume for any job
+          description. Analyze keyword matches, get improvement suggestions, and
+          boost your chances of landing interviews.
         </p>
         <div className="flex justify-center">
           <button
@@ -107,7 +109,9 @@ export const AnalysisForm = () => {
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
           <div className="flex items-center space-x-2 mb-2">
             <span className="text-red-600 text-xl">❌</span>
-            <h3 className="text-lg font-semibold text-red-800">Analysis Error</h3>
+            <h3 className="text-lg font-semibold text-red-800">
+              Analysis Error
+            </h3>
           </div>
           <p className="text-red-700">{error}</p>
           <button
@@ -123,8 +127,12 @@ export const AnalysisForm = () => {
       {result && (
         <div className="space-y-8">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Analysis Results</h2>
-            <p className="text-gray-600">Here&apos;s how your resume matches the job description</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Analysis Results
+            </h2>
+            <p className="text-gray-600">
+              Here&apos;s how your resume matches the job description
+            </p>
           </div>
 
           {/* Match Percentage */}
@@ -147,7 +155,9 @@ export const AnalysisForm = () => {
           <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
             <div className="flex items-center space-x-2 mb-3">
               <span className="text-blue-600 text-xl">🎯</span>
-              <h3 className="text-lg font-semibold text-blue-800">Overall Feedback</h3>
+              <h3 className="text-lg font-semibold text-blue-800">
+                Overall Feedback
+              </h3>
             </div>
             <p className="text-blue-700">{result.overall_feedback}</p>
           </div>
@@ -159,11 +169,16 @@ export const AnalysisForm = () => {
               <div className="bg-green-50 rounded-lg p-6 border border-green-200">
                 <div className="flex items-center space-x-2 mb-3">
                   <span className="text-green-600 text-xl">💪</span>
-                  <h3 className="text-lg font-semibold text-green-800">Strengths</h3>
+                  <h3 className="text-lg font-semibold text-green-800">
+                    Strengths
+                  </h3>
                 </div>
                 <ul className="space-y-2">
                   {result.strengths.map((strength, index) => (
-                    <li key={index} className="text-green-700 text-sm flex items-start space-x-2">
+                    <li
+                      key={index}
+                      className="text-green-700 text-sm flex items-start space-x-2"
+                    >
                       <span className="text-green-600 mt-0.5">•</span>
                       <span>{strength}</span>
                     </li>
@@ -173,25 +188,33 @@ export const AnalysisForm = () => {
             )}
 
             {/* Areas for Improvement */}
-            {result.areas_for_improvement && result.areas_for_improvement.length > 0 && (
-              <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-200">
-                <div className="flex items-center space-x-2 mb-3">
-                  <span className="text-yellow-600 text-xl">🎯</span>
-                  <h3 className="text-lg font-semibold text-yellow-800">Areas for Improvement</h3>
+            {result.areas_for_improvement &&
+              result.areas_for_improvement.length > 0 && (
+                <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-200">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <span className="text-yellow-600 text-xl">🎯</span>
+                    <h3 className="text-lg font-semibold text-yellow-800">
+                      Areas for Improvement
+                    </h3>
+                  </div>
+                  <ul className="space-y-2">
+                    {result.areas_for_improvement.map((area, index) => (
+                      <li
+                        key={index}
+                        className="text-yellow-700 text-sm flex items-start space-x-2"
+                      >
+                        <span className="text-yellow-600 mt-0.5">•</span>
+                        <span>{area}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2">
-                  {result.areas_for_improvement.map((area, index) => (
-                    <li key={index} className="text-yellow-700 text-sm flex items-start space-x-2">
-                      <span className="text-yellow-600 mt-0.5">•</span>
-                      <span>{area}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              )}
           </div>
         </div>
       )}
     </div>
   );
 };
+
+export default AnalysisForm;

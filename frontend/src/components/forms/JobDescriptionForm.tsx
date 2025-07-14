@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 interface JobDescriptionFormProps {
   value: string;
@@ -6,11 +6,18 @@ interface JobDescriptionFormProps {
   disabled?: boolean;
 }
 
-export const JobDescriptionForm = ({ value, onChange, disabled = false }: JobDescriptionFormProps) => {
+export const JobDescriptionForm = ({
+  value,
+  onChange,
+  disabled = false,
+}: JobDescriptionFormProps) => {
   return (
     <div className="space-y-4">
       <div>
-        <label htmlFor="job-description" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="job-description"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Job Description
         </label>
         <textarea
@@ -22,10 +29,11 @@ export const JobDescriptionForm = ({ value, onChange, disabled = false }: JobDes
           placeholder="Paste the job description here..."
         />
       </div>
-      
+
       <div className="flex items-center space-x-2">
         <span className="text-xs text-gray-500">
-          💡 Include requirements, responsibilities, and preferred qualifications for best results
+          💡 Include requirements, responsibilities, and preferred
+          qualifications for best results
         </span>
       </div>
     </div>
